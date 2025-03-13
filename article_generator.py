@@ -1,7 +1,10 @@
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_core.runnables import RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
 from langchain_chroma import Chroma
+from langchain_core.prompts import ChatPromptTemplate
 from wikipedia_retriever import get_all_wiki_docs
-
+from helper import get_system_prompt, get_generation_template
 class ArticleGenerator:
     def __init__(self, 
                  api_key="lm-studio", 
@@ -27,11 +30,11 @@ class ArticleGenerator:
             search_type="similarity_score_threshold",
             search_kwargs={'score_threshold': 0.5, 'k': 5}
         )
-        
     
     def load_vector_store(self, query: str):
         wiki_docs = get_all_wiki_docs(model=self.model, search_query=query)
-        self.vector_store.add_documents(wiki_docs)
+        if wiki_docs and len(wiki_docs)>0:
+            self.vector_store.add_documents(wiki_docs)
 
     def get_relevant_content(self, search_query: str) -> str:
         docs = self.retriever.invoke("search_query: "+search_query)
@@ -44,14 +47,18 @@ class ArticleGenerator:
         return pg_content
     
     def get_context(self, search_query: str) -> str:
-        content = self.get_relevant_content(search_query)
-        context = ""
+        content_list = self.get_relevant_content(search_query)
+        context = get_system_prompt(content_list)
         return context
 
     def generate(self, search_query: str) -> dict:
         if search_query.strip()=="":
             return None
+        generation_prompt = ChatPromptTemplate.from_template(get_generation_template())
+        
+        generation_chain = generation_prompt | self.model | StrOutputParser()
+        return generation_chain.invoke({'context': self.get_context(search_query), 'query':search_query})
         
         
 ag = ArticleGenerator()
-ag.get_context("Late stage capitalism")
+print(ag.generate("Oscars 2025 results"))
