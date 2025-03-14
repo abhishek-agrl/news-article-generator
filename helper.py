@@ -1,8 +1,7 @@
-def get_system_prompt(content_list: list[str]) -> str:
-    system_prompt = \
-    f'''
-{"\n\n".join([f"Context {i+1}: {content}" for i, content in enumerate(content_list)])}
-    '''
+def get_system_prompt(content_dict: dict) -> str:
+    system_prompt = ""
+    for i, (source, content) in enumerate(content_dict.items()):
+        system_prompt += f"Source {i+1}: {source}\nContext {i+1}: {content}"
 
     return system_prompt
 
@@ -33,6 +32,7 @@ Use the following context when responding:
 
 <|start_header_id|>user<|end_header_id|>
 Write a brief article with a catchy headline according to User Query. Strictly output 1 headline and 3 other paragraphs.
+List your sources.
 User Query: {query}
 
 

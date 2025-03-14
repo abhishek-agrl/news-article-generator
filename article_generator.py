@@ -4,6 +4,7 @@ from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from wikipedia_retriever import get_all_wiki_docs
 from helper import get_system_prompt, get_generation_template
+import time
 class ArticleGenerator:
     def __init__(self, 
                  api_key="lm-studio", 
@@ -39,15 +40,23 @@ class ArticleGenerator:
         docs = self.retriever.invoke("search_query: "+search_query)
         if len(docs)<5:
             self.load_vector_store(search_query)
+            time.sleep(2)
             docs = self.retriever.invoke("search_query: "+search_query)
         
+        if len(docs)<1:
+            print("Couldn't find valid documents")
+            return None
+        
         # Strip "search_document: " from the start of each document
-        pg_content = [doc.page_content[17:] for doc in docs]
+        pg_content = {doc.metadata['source']: doc.page_content[17:] for doc in docs}
         return pg_content
     
     def get_context(self, search_query: str) -> str:
-        content_list = self.get_relevant_content(search_query)
-        context = get_system_prompt(content_list)
+        content_dict = self.get_relevant_content(search_query)
+        if not content_dict:
+            return None
+        
+        context = get_system_prompt(content_dict)
         return context
 
     def generate(self, search_query: str) -> dict:
@@ -56,7 +65,11 @@ class ArticleGenerator:
         generation_prompt = ChatPromptTemplate.from_template(get_generation_template())
         
         generation_chain = generation_prompt | self.model | StrOutputParser()
-        return generation_chain.invoke({'context': self.get_context(search_query), 'query':search_query})
+        context = self.get_context(search_query=search_query)
+        if not context:
+            return None
+        
+        return generation_chain.invoke({'context': context, 'query':search_query})
         
         
 # ag = ArticleGenerator()

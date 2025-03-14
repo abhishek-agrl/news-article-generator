@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 from article_generator import ArticleGenerator
 
 app = Flask(__name__)
@@ -12,6 +12,8 @@ def index():
 def generate():
     search_query = request.form['search_query']
     response_text = article_generator.generate(search_query=search_query.strip())
+    if not response_text:
+        return Response(status=500, response="Failed to generate, likely due to missing context")
     return response_text
 
 if __name__ == '__main__':

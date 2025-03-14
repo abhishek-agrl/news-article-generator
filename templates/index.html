@@ -55,7 +55,7 @@
             .then(response => response.text())
             .then(data => {
                 data = data.split(/\r?\n/);
-                heading_text = data[0].replace(/"/g, "");
+                heading_text = data[0].replace(/"/g, "").replace(/\*/g, "");
                 data = data.slice(1);
                 content_text = data.join("\n");
                 
