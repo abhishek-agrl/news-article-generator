@@ -55,12 +55,10 @@
             .then(response => response.text())
             .then(data => {
                 data = data.split(/\r?\n/);
-                heading_text = data[0].substring(1, data[0].length-1);
+                heading_text = data[0].replace(/"/g, "");
                 data = data.slice(1);
                 content_text = data.join("\n");
                 
-                // data.split(/\r?\n/);
-                // document.getElementById('heading').innerText=data;
                 heading.innerText=heading_text;
                 content.innerText=content_text;
             })
