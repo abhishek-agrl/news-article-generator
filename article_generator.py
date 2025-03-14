@@ -1,5 +1,4 @@
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
@@ -60,5 +59,5 @@ class ArticleGenerator:
         return generation_chain.invoke({'context': self.get_context(search_query), 'query':search_query})
         
         
-ag = ArticleGenerator()
-print(ag.generate("Oscars 2025 results"))
+# ag = ArticleGenerator()
+# print(ag.generate("Oscars 2025 results"))
