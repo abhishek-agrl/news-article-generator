@@ -18,7 +18,7 @@ Steps -
 * The application has a simple UI written in vanilla JS and HTML/CSS. It is served by a Flask server which also contains an endpoint to trigger the RAG pipeline.
 * On user prompt the following flow takes place -
   1. The query is first used to search through the local vectorstore and get 5 relevant documents, in case the information is already available locally. This prevents going to Wikipedia for repeated as well as similar prompts. Obviously, this also boosts overall response times.
-  2. If 5 relevant documents are found (determined by the ChromaDB retriever parameter [score_threshold](https://python.langchain.com/api_reference/chroma/vectorstores/langchain_chroma.vectorstores.Chroma.html#langchain_chroma.vectorstores.Chroma.as_retriever)), We jump to step 7.
+  2. If 5 relevant documents are found (relevancy determined by the ChromaDB retriever parameter [score_threshold](https://python.langchain.com/api_reference/chroma/vectorstores/langchain_chroma.vectorstores.Chroma.html#langchain_chroma.vectorstores.Chroma.as_retriever)), We jump to step 7.
   3. If not, then the query is sent to the LLM with a hard-coded prompt to generate a list of 5 relevant topics to search on Wikipedia.
   4. The generated topics are parallelly searched on Wikipedia using [LangChain RunnableParallel](https://python.langchain.com/docs/how_to/parallel/) and [LangChain Wikipedia Retriever](https://python.langchain.com/docs/integrations/retrievers/wikipedia/) to get 2 documents per topic.
   5. The documents (still parallelly) are splitted into chunks according to the token size of embedding model and stored in the vectorstore after embedding.
