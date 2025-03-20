@@ -7,7 +7,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTex
 from helper import get_wiki_topic_template
 from typing import List
 import itertools
-import re
+from config import TEXT_SPLITTER_CHUNK_SIZE, TEXT_SPLITTER_CHUNK_OVERLAP
 
 # TODO: Bert-base-uncased Tokenizer not working, Transformers broken install
 # import transformers.generation.utils
@@ -19,8 +19,8 @@ import re
 # )
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=2500, 
-    chunk_overlap=0, 
+    chunk_size = TEXT_SPLITTER_CHUNK_SIZE, 
+    chunk_overlap = TEXT_SPLITTER_CHUNK_OVERLAP, 
     separators=["\n\n\n\n", "\n\n\n", "\n\n", "\n", " ", ""]
 )
 

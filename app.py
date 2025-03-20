@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, Response
 from article_generator import ArticleGenerator
+import config
 
 app = Flask(__name__)
 article_generator = ArticleGenerator()

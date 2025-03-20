@@ -5,11 +5,13 @@ from langchain_core.prompts import ChatPromptTemplate
 from wikipedia_retriever import get_all_wiki_docs
 from helper import get_system_prompt, get_generation_template
 import time
+from config import OPEN_AI_API_KEY, OPEN_AI_BASE_URL, LLM_TEMPERATURE, \
+                   VECTORSTORE_CONFIDENCE_THRESHOLD, VECTORSTORE_DOCUMENT_LIMIT
 class ArticleGenerator:
     def __init__(self, 
-                 api_key="lm-studio", 
-                 base_url="http://127.0.0.1:1234/v1/",
-                 temperature = 0.25,
+                 api_key=OPEN_AI_API_KEY, 
+                 base_url=OPEN_AI_BASE_URL,
+                 temperature = LLM_TEMPERATURE,
                  ):
         
         self.model = ChatOpenAI(
@@ -28,7 +30,10 @@ class ArticleGenerator:
         )
         self.retriever = self.vector_store.as_retriever(
             search_type="similarity_score_threshold",
-            search_kwargs={'score_threshold': 0.5, 'k': 5}
+            search_kwargs={
+                'score_threshold': VECTORSTORE_CONFIDENCE_THRESHOLD, 
+                'k': VECTORSTORE_DOCUMENT_LIMIT
+            }
         )
     
     def load_vector_store(self, query: str):
