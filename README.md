@@ -1,4 +1,4 @@
-# News Article Generation
+# News Article Generator
 A simple project to understand RAG systems and their integration with LLMs.
 
 ## Setup
